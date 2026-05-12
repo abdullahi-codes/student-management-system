@@ -13,3 +13,14 @@ cursor.execute(query, values)
 db.commit()
 
 print("Student added successfully!")
+
+print("\nStudent Records:\n")
+
+query = "SELECT * FROM students"
+
+cursor.execute(query)
+
+students = cursor.fetchall()
+
+for student in students:
+    print(student)
