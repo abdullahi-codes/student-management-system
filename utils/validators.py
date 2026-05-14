@@ -30,3 +30,34 @@ def get_float(prompt, min_val=0.0, max_val=4.0):
 
         except ValueError:
             print("Please enter a valid decimal number")
+
+def get_regno(prompt):
+    while True:
+        regno = input(prompt)
+
+        if regno.isdigit() and len(regno) == 4:
+            return regno
+
+        print("Reg No must be exactly 4 digits")
+
+def get_name(prompt):
+    while True:
+        name = input(prompt).strip()
+
+        check_name = name.replace(" ", "")
+
+        if check_name.isalpha():
+            return name
+
+        print("Only letters are allowed")
+
+def get_program(prompt):
+    while True:
+        program = input(prompt).strip()
+
+        check_program = program.replace(" ", "")
+
+        if check_program.isalpha() and len(check_program) >= 2:
+            return program.upper()
+
+        print("Program must contain only letters and at least 2 characters")
