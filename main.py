@@ -29,10 +29,10 @@ from database import cursor, db
 
 while True:
 
-    print("\n--- Student Management System ---")
     print("1. Add Student")
     print("2. Show Students")
-    print("3. Exit")
+    print("3. Delete Student")
+    print("4. Exit")
 
     choice = input("Enter your choice: ")
 
@@ -66,6 +66,21 @@ while True:
             print(student)
 
     elif choice == "3":
+
+        student_id = input("Enter student ID to delete: ")
+    
+        query = "DELETE FROM students WHERE id = %s"
+    
+        cursor.execute(query, (student_id,))
+    
+        db.commit()
+    
+        if cursor.rowcount > 0:
+            print("Student deleted successfully!")
+        else:
+            print("Student not found.")
+
+    elif choice == "4":
 
         print("Program exited.")
         break
