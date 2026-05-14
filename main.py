@@ -1,250 +1,104 @@
-from database import cursor, db
+from services.student_service import *
 
 
-# Add Student
+# =========================
+# ADD STUDENT (UI ONLY)
+# =========================
 def add_student():
 
-    regnum = int(input("Enter Registration Number: "))
-
-    name = input("Enter Name: ")
-
-    fname = input("Enter Father's Name: ")
-
-    degprog = input("Enter Degree Program: ")
+    regnum = int(input("Reg No: "))
+    name = input("Name: ")
+    fname = input("Father: ")
+    degprog = input("Program: ")
 
     marks = []
-
     for i in range(5):
+        mark = int(input(f"Mark {i+1}: "))
+        marks.append(mark)
 
-        while True:
+    semnum = int(input("Semester: "))
 
-            mark = int(input(f"Enter Marks for Subject {i+1}: "))
+    add_student_data(regnum, name, fname, degprog, semnum, marks)
 
-            if 0 <= mark <= 100:
-                marks.append(mark)
-                break
-
-            else:
-                print("Marks must be between 0 and 100.")
-
-    while True:
-
-        semnum = int(input("Enter Semester Number (1-8): "))
-
-        if 1 <= semnum <= 8:
-            break
-
-        else:
-            print("Invalid Semester Number.")
-
-    while True:
-
-        cgpa = float(input("Enter CGPA (0.0 - 4.0): "))
-
-        if 0.0 <= cgpa <= 4.0:
-            break
-
-        else:
-            print("Invalid CGPA.")
-
-    query = """
-    INSERT INTO students
-    (
-        regnum,
-        name,
-        fname,
-        degprog,
-        sub1,
-        sub2,
-        sub3,
-        sub4,
-        sub5,
-        semnum,
-        cgpa
-    )
-
-    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-    """
-
-    values = (
-        regnum,
-        name,
-        fname,
-        degprog,
-        marks[0],
-        marks[1],
-        marks[2],
-        marks[3],
-        marks[4],
-        semnum,
-        cgpa
-    )
-
-    cursor.execute(query, values)
-
-    db.commit()
-
-    print("Student added successfully!")
+    print("Student added!")
 
 
-# Show Students
+# =========================
+# SHOW STUDENTS
+# =========================
 def show_students():
+    students = get_all_students()
 
-    query = "SELECT * FROM students"
-
-    cursor.execute(query)
-
-    students = cursor.fetchall()
-
-    print("\n========== STUDENT RECORDS ==========\n")
-
-    for student in students:
-
-        print(f"""
-ID: {student[0]}
-Registration Number: {student[1]}
-Name: {student[2]}
-Father Name: {student[3]}
-Degree Program: {student[4]}
-Marks: {student[5]}, {student[6]}, {student[7]}, {student[8]}, {student[9]}
-Semester: {student[10]}
-CGPA: {student[11]}
-=====================================
-""")
+    print("\n===== STUDENTS =====\n")
+    for s in students:
+        print(s)
 
 
-# Search Student
+# =========================
+# SEARCH STUDENT
+# =========================
 def search_student():
 
-    regnum = input("Enter Registration Number to Search: ")
+    regnum = int(input("Reg No: "))
 
-    query = "SELECT * FROM students WHERE regnum = %s"
-
-    cursor.execute(query, (regnum,))
-
-    student = cursor.fetchone()
+    student = find_student(regnum)
 
     if student:
-
-        print(f"""
-ID: {student[0]}
-Registration Number: {student[1]}
-Name: {student[2]}
-Father Name: {student[3]}
-Degree Program: {student[4]}
-Marks: {student[5]}, {student[6]}, {student[7]}, {student[8]}, {student[9]}
-Semester: {student[10]}
-CGPA: {student[11]}
-""")
-
+        print(student)
     else:
-        print("Student not found.")
+        print("Not found")
 
 
-# Delete Student
+# =========================
+# DELETE STUDENT (FIXED)
+# =========================
 def delete_student():
 
-    regnum = input("Enter Registration Number to Delete: ")
+    regnum = int(input("Reg No: "))
 
-    query = "DELETE FROM students WHERE regnum = %s"
+    student_id = get_student_id(regnum)
 
-    cursor.execute(query, (regnum,))
-
-    db.commit()
-
-    if cursor.rowcount > 0:
-        print("Student deleted successfully!")
-
+    if student_id:
+        delete_student_data(student_id)
+        print("Deleted")
     else:
-        print("Student not found.")
+        print("Not found")
 
 
-# Update Student
+# =========================
+# UPDATE STUDENT (FIXED)
+# =========================
 def update_student():
 
-    regnum = input("Enter Registration Number to Update: ")
+    regnum = int(input("Reg No: "))
 
-    query = "SELECT * FROM students WHERE regnum = %s"
+    student_id = get_student_id(regnum)
 
-    cursor.execute(query, (regnum,))
-
-    student = cursor.fetchone()
-
-    if not student:
-        print("Student not found.")
+    if not student_id:
+        print("Not found")
         return
 
-    print("Enter New Data")
-
-    name = input("Enter New Name: ")
-
-    fname = input("Enter New Father Name: ")
-
-    degprog = input("Enter New Degree Program: ")
+    name = input("New Name: ")
+    fname = input("New Father: ")
+    degprog = input("New Program: ")
+    semnum = int(input("New Semester: "))
 
     marks = []
-
     for i in range(5):
+        mark = int(input(f"New Mark {i+1}: "))
+        marks.append(mark)
 
-        while True:
+    update_student_data(student_id, name, fname, degprog, semnum, marks)
 
-            mark = int(input(f"Enter New Marks for Subject {i+1}: "))
-
-            if 0 <= mark <= 100:
-                marks.append(mark)
-                break
-
-            else:
-                print("Invalid Marks.")
-
-    semnum = int(input("Enter New Semester Number: "))
-
-    cgpa = float(input("Enter New CGPA: "))
-
-    query = """
-    UPDATE students
-
-    SET
-        name=%s,
-        fname=%s,
-        degprog=%s,
-        sub1=%s,
-        sub2=%s,
-        sub3=%s,
-        sub4=%s,
-        sub5=%s,
-        semnum=%s,
-        cgpa=%s
-
-    WHERE regnum=%s
-    """
-
-    values = (
-        name,
-        fname,
-        degprog,
-        marks[0],
-        marks[1],
-        marks[2],
-        marks[3],
-        marks[4],
-        semnum,
-        cgpa,
-        regnum
-    )
-
-    cursor.execute(query, values)
-
-    db.commit()
-
-    print("Student updated successfully!")
+    print("Updated")
 
 
-# Main Menu
+# =========================
+# MAIN MENU
+# =========================
 while True:
 
-    print("\n========== STUDENT MANAGEMENT SYSTEM ==========")
-
+    print("\n===== STUDENT SYSTEM =====")
     print("1. Add Student")
     print("2. Show Students")
     print("3. Search Student")
@@ -252,7 +106,7 @@ while True:
     print("5. Update Student")
     print("6. Exit")
 
-    choice = input("Enter your choice: ")
+    choice = input("Enter choice: ")
 
     if choice == "1":
         add_student()
@@ -270,8 +124,8 @@ while True:
         update_student()
 
     elif choice == "6":
-        print("Program exited.")
+        print("Goodbye")
         break
 
     else:
-        print("Invalid choice.")
+        print("Invalid choice")
