@@ -1,4 +1,5 @@
 from services.student_service import *
+from utils.validators import get_int, get_float
 
 
 # =========================
@@ -6,17 +7,17 @@ from services.student_service import *
 # =========================
 def add_student():
 
-    regnum = int(input("Reg No: "))
+    regnum = get_int("Reg No: ")
     name = input("Name: ")
     fname = input("Father: ")
     degprog = input("Program: ")
 
     marks = []
     for i in range(5):
-        mark = int(input(f"Mark {i+1}: "))
+        mark = get_int(f"Mark {i+1}: ", 0, 100)
         marks.append(mark)
 
-    semnum = int(input("Semester: "))
+    semnum = get_int("Semester: ", 1, 8)
 
     add_student_data(regnum, name, fname, degprog, semnum, marks)
 
@@ -39,7 +40,7 @@ def show_students():
 # =========================
 def search_student():
 
-    regnum = int(input("Reg No: "))
+    regnum = get_int("Reg No: ")
 
     student = find_student(regnum)
 
@@ -50,11 +51,11 @@ def search_student():
 
 
 # =========================
-# DELETE STUDENT (FIXED)
+# DELETE STUDENT
 # =========================
 def delete_student():
 
-    regnum = int(input("Reg No: "))
+    regnum = get_int("Reg No: ")
 
     student_id = get_student_id(regnum)
 
@@ -66,11 +67,11 @@ def delete_student():
 
 
 # =========================
-# UPDATE STUDENT (FIXED)
+# UPDATE STUDENT
 # =========================
 def update_student():
 
-    regnum = int(input("Reg No: "))
+    regnum = get_int("Reg No: ")
 
     student_id = get_student_id(regnum)
 
@@ -81,11 +82,11 @@ def update_student():
     name = input("New Name: ")
     fname = input("New Father: ")
     degprog = input("New Program: ")
-    semnum = int(input("New Semester: "))
+    semnum = get_int("New Semester: ", 1, 8)
 
     marks = []
     for i in range(5):
-        mark = int(input(f"New Mark {i+1}: "))
+        mark = get_int(f"New Mark {i+1}: ", 0, 100)
         marks.append(mark)
 
     update_student_data(student_id, name, fname, degprog, semnum, marks)
